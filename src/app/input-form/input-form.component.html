@@ -1,0 +1,109 @@
+<mat-stepper class="stepper" [orientation]="'vertical'" [linear]="'true'">
+  <mat-step [stepControl]="solarPanels" label="Choose your desired components" state="basket">
+    <form>
+      <p>Choose the product components that best fit your needs. Currently, our offerings are limited to solar panels in
+        the ongoing development phase (v0.4). However, we are actively working towards expanding our product range to
+        include comprehensive energy storage systems supplied by our trusted partners.</p>
+      <span class="example-list-section">
+        <p><mat-checkbox [formControl]="solarPanels" class="example-margin">Solar panels</mat-checkbox></p>
+        <p><mat-checkbox [formControl]="energyStorage" class="example-margin">Energy storage</mat-checkbox></p>
+      </span>
+      <div class="mat-stepper-buttons">
+        <button mat-button matStepperNext [disabled]="solarPanels.invalid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="electricityBill" label="State your average monthly electricity bill" state="money">
+    <form>
+      <p>Based on your information, we calculate the optimum number of solar modules to cover your electricity
+        requirements. We strictly uphold privacy standards, and the information is solely used for the purpose of
+        evaluating the optimal solar configuration for your specific needs</p>
+      <mat-form-field class="full">
+        <mat-label>Electricity bill</mat-label>
+        <input matInput type="number" class="example-right-align" placeholder="Eg. 500" [formControl]="electricityBill"
+          required>
+        <span matTextSuffix>.00 €</span>
+        @if (electricityBill.hasError('min') && !electricityBill.hasError('required')) {
+        <mat-error>Please enter a amount over 20 €</mat-error>
+        }
+        @if (electricityBill.hasError('max') && !electricityBill.hasError('required')) {
+        <mat-error>Please enter a amount under 2000 €</mat-error>
+        }
+        @if (electricityBill.hasError('required')) {
+        <mat-error>Electricity bill is required</mat-error>
+        }
+      </mat-form-field>
+      <div class="mat-stepper-buttons">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext [disabled]="electricityBill.invalid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="addressQuery" label="Search for your address" state="location">
+    <form>
+      <p>By entering your address, we conduct a search to precisely locate the position of your roof. This ensures
+        accurate data for subsequent processes such as roof area measurement and solar configuration calculations.
+        Please note that, in order to provide you with our services, we will securely forward this data to our partner
+        Google.</p>
+      <mat-form-field class="full">
+        <mat-label>Address</mat-label>
+        <input matInput [formControl]="addressQuery" placeholder="Eg. Albertus-Magnus-Platz, 50923 Köln" required>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="findCoordinates()" [disabled]="addressQuery.invalid">Next</button>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step label="Confirm location" state="visibility">
+    <div *ngIf="googleMapsPreviewUrl.toString() != 'https://localhost'; else progressBar">
+      <p>Before proceeding with the measurement of your roof area and the calculation of the optimal solar
+        configurations,
+        kindly verify that we have accurately identified your property.</p>
+      <iframe width="100%" height="400" frameborder="0" style="border:0; padding-bottom: 22px;"
+        referrerpolicy="no-referrer-when-downgrade" [src]="googleMapsPreviewUrl.toString() | safe: 'resourceUrl'"
+        allowfullscreen>
+      </iframe>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext (click)="getBuildingInsights()">Next</button>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Select solar panel configuration" state="build">
+    <div *ngIf="buildingInsights; else progressBar">
+      <p>The roof of your specified building measures {{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 ||
+        "null" }} &#13217;. We were able to identify {{ solarPanelConfigs?.length || "null" }} different solar panel
+        configurations.</p>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+      </div>
+    </div>
+  </mat-step>
+
+  <!-- Progress bar -->
+  <ng-template #progressBar>
+    <mat-progress-bar mode="query"></mat-progress-bar>
+  </ng-template>
+
+  <!-- Icon overrides -->
+  <ng-template matStepperIcon="basket">
+    <mat-icon>shopping_basket</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="money">
+    <mat-icon>attach_money</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="location">
+    <mat-icon>place</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="visibility">
+    <mat-icon>visibility</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="build">
+    <mat-icon>build</mat-icon>
+  </ng-template>
+</mat-stepper>
