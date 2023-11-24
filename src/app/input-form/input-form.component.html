@@ -77,8 +77,11 @@
   <mat-step label="Select solar panel configuration" state="build">
     <div *ngIf="buildingInsights; else progressBar">
       <p>The roof of your specified building measures {{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 ||
-        "null" }} &#13217;. We were able to identify {{ solarPanelConfigs?.length || "null" }} different solar panel
+        "null" }} &#13217;. We were able to identify a total of {{ solarPanelConfigs?.length || "null" }} different
+        solar panel
         configurations.</p>
+      <p>Based on your average monthly electricity bill of {{ electricityBill.value }}.00 € we recommend your the
+        following setups.</p>
       <div>
         <button mat-button matStepperPrevious>Back</button>
       </div>
