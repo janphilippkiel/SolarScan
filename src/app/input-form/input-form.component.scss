@@ -14,3 +14,24 @@ input.example-right-align::-webkit-inner-spin-button {
 input.example-right-align {
     -moz-appearance: textfield;
 }
+
+mat-slider {
+    width: 300px;
+}
+
+code {
+    font-size: 90%;
+    padding: 3px;
+    background-color: #f7f6f4;
+}
+
+pre {
+    font-size: 90%;
+    padding: 16px;
+    background-color: #f7f6f4;
+}
+
+code,
+pre {
+    font-family: Roboto Mono, monospace;
+}

@@ -2,7 +2,7 @@
   <mat-step [stepControl]="solarPanels" label="Choose your desired components" state="basket">
     <form>
       <p>Choose the product components that best fit your needs. Currently, our offerings are limited to solar panels in
-        the ongoing development phase (v0.4). However, we are actively working towards expanding our product range to
+        the ongoing development phase. However, we are actively working towards expanding our product range to
         include comprehensive energy storage systems supplied by our trusted partners.</p>
       <span class="example-list-section">
         <p><mat-checkbox [formControl]="solarPanels" class="example-margin">Solar panels</mat-checkbox></p>
@@ -62,7 +62,7 @@
     <div *ngIf="googleMapsPreviewUrl.toString() != 'https://localhost'; else progressBar">
       <p>Before proceeding with the measurement of your roof area and the calculation of the optimal solar
         configurations, kindly verify that we have accurately identified your property.</p>
-      <iframe width="100%" height="400" frameborder="0" style="border:0; padding-bottom: 22px;"
+      <iframe width="100%" height="400" frameborder="0" style="border: 0; padding-bottom: 22px;"
         referrerpolicy="no-referrer-when-downgrade" [src]="googleMapsPreviewUrl.toString() | safe: 'resourceUrl'"
         allowfullscreen>
       </iframe>
@@ -75,11 +75,16 @@
 
   <mat-step label="Select solar panel configuration" state="build">
     <div *ngIf="buildingInsights; else progressBar">
-      <p>The roof of your specified building measures {{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 ||
-        "null" }} &#13217;. We were able to identify a total of {{ solarPanelConfigs?.length || "null" }} different
-        solar panel configurations.</p>
-      <p>Considering your monthly electricity bill averages {{ electricityBill.value }}.00 €, we propose the following
-        setups.</p>
+      <p>Based on our <span title="Google Solar API">partners</span> data from <code>{{ imageryDate }}</code> the roof
+        of your specified building measures <code>{{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 ||
+        "null" }} &#13217;</code>. Considering your monthly electricity bill averages
+        <code>{{ electricityBill.value }}.00 €</code>, we propose the following setup.</p>
+      <span style="padding-right: 16px;">Solar panel configuration</span>
+      <mat-slider [min]="0" [max]="solarPanelConfigs?.length -1" step="1">
+        <input matSliderThumb [formControl]="solarPanelCount" #solarPanelSlider>
+      </mat-slider>
+      <span style="padding-left: 16px;">{{ solarPanelConfigs[solarPanelSlider.value].panelsCount }} panels</span>
+      <pre>{{ solarPanelConfigs[solarPanelSlider.value] | json }}</pre>
       <div>
         <button mat-button matStepperPrevious (click)="flushBuildingInsights()">Back</button>
         <button mat-button (click)="stepper.reset()">Reset</button>

@@ -38,14 +38,16 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   standalone: false
 })
 export class InputFormComponent {
-  solarPanels = new FormControl({ value: true, disabled: false }, [Validators.requiredTrue]);;
-  energyStorage = new FormControl({ value: false, disabled: true }, [Validators.required]);;
+  solarPanels = new FormControl({ value: true, disabled: false }, [Validators.requiredTrue]);
+  energyStorage = new FormControl({ value: false, disabled: true }, [Validators.required]);
   electricityBill = new FormControl('', [Validators.required, Validators.min(20), Validators.max(2000)]);
   addressQuery = new FormControl('', [Validators.required]);
   queryCoordinates: any;
   googleMapsPreviewUrl: SafeResourceUrl = "https://localhost";
   buildingInsights: any;
   solarPanelConfigs: any;
+  imageryDate: any;
+  solarPanelCount = new FormControl('');
 
   constructor(
     private _httpClient: HttpClient
@@ -62,6 +64,7 @@ export class InputFormComponent {
     this._httpClient.get(`https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${this.queryCoordinates['lat']}&location.longitude=${this.queryCoordinates['lng']}&key=${environment.googleApiKey}&requiredQuality=HIGH`).subscribe((data: any) => {
       this.buildingInsights = data;
       this.solarPanelConfigs = this.buildingInsights.solarPotential.solarPanelConfigs;
+      this.imageryDate = Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(new Date(`${this.buildingInsights.imageryDate.year}-${this.buildingInsights.imageryDate.month}-${this.buildingInsights.imageryDate.day}`));
       console.log(data);
       // this.solarPanelConfigs.forEach((element: any) => {
       //   console.log(element)
@@ -73,4 +76,5 @@ export class InputFormComponent {
     this.buildingInsights = null;
     this.solarPanelConfigs = null;
   }
+
 }
