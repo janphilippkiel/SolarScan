@@ -1,4 +1,4 @@
-<mat-stepper class="stepper" [orientation]="'vertical'" [linear]="'true'">
+<mat-stepper class="stepper" [orientation]="'vertical'" [linear]="'true'" #stepper>
   <mat-step [stepControl]="solarPanels" label="Choose your desired components" state="basket">
     <form>
       <p>Choose the product components that best fit your needs. Currently, our offerings are limited to solar panels in
@@ -61,8 +61,7 @@
   <mat-step label="Confirm location" state="visibility">
     <div *ngIf="googleMapsPreviewUrl.toString() != 'https://localhost'; else progressBar">
       <p>Before proceeding with the measurement of your roof area and the calculation of the optimal solar
-        configurations,
-        kindly verify that we have accurately identified your property.</p>
+        configurations, kindly verify that we have accurately identified your property.</p>
       <iframe width="100%" height="400" frameborder="0" style="border:0; padding-bottom: 22px;"
         referrerpolicy="no-referrer-when-downgrade" [src]="googleMapsPreviewUrl.toString() | safe: 'resourceUrl'"
         allowfullscreen>
@@ -78,19 +77,19 @@
     <div *ngIf="buildingInsights; else progressBar">
       <p>The roof of your specified building measures {{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 ||
         "null" }} &#13217;. We were able to identify a total of {{ solarPanelConfigs?.length || "null" }} different
-        solar panel
-        configurations.</p>
-      <p>Based on your average monthly electricity bill of {{ electricityBill.value }}.00 € we recommend your the
-        following setups.</p>
+        solar panel configurations.</p>
+      <p>Considering your monthly electricity bill averages {{ electricityBill.value }}.00 €, we propose the following
+        setups.</p>
       <div>
-        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperPrevious (click)="flushBuildingInsights()">Back</button>
+        <button mat-button (click)="stepper.reset()">Reset</button>
       </div>
     </div>
   </mat-step>
 
   <!-- Progress bar -->
   <ng-template #progressBar>
-    <mat-progress-bar mode="query"></mat-progress-bar>
+    <mat-progress-bar mode="query" style="margin-top: 24px;"></mat-progress-bar>
   </ng-template>
 
   <!-- Icon overrides -->

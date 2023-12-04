@@ -63,6 +63,14 @@ export class InputFormComponent {
       this.buildingInsights = data;
       this.solarPanelConfigs = this.buildingInsights.solarPotential.solarPanelConfigs;
       console.log(data);
+      // this.solarPanelConfigs.forEach((element: any) => {
+      //   console.log(element)
+      // });
     });
+  }
+
+  flushBuildingInsights() {
+    this.buildingInsights = null;
+    this.solarPanelConfigs = null;
   }
 }
