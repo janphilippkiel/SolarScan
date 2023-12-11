@@ -14,29 +14,29 @@
     </form>
   </mat-step>
 
-  <mat-step [stepControl]="electricityBill" label="State your average monthly electricity bill" state="money">
+  <mat-step [stepControl]="monthlyBill" label="State your average monthly electricity bill" state="money">
     <form>
       <p>Based on your information, we calculate the optimum number of solar modules to cover your electricity
         requirements. We strictly uphold privacy standards, and the information is solely used for the purpose of
         evaluating the optimal solar configuration for your specific needs</p>
       <mat-form-field class="full">
         <mat-label>Electricity bill</mat-label>
-        <input matInput type="number" class="example-right-align" placeholder="Eg. 500" [formControl]="electricityBill"
+        <input matInput type="number" class="example-right-align" placeholder="Eg. 500" [formControl]="monthlyBill"
           required>
-        <span matTextSuffix>.00 €</span>
-        @if (electricityBill.hasError('min') && !electricityBill.hasError('required')) {
+        <span matTextSuffix>,00 €</span>
+        @if (monthlyBill.hasError('min') && !monthlyBill.hasError('required')) {
         <mat-error>Please enter a amount over 20 €</mat-error>
         }
-        @if (electricityBill.hasError('max') && !electricityBill.hasError('required')) {
-        <mat-error>Please enter a amount under 2000 €</mat-error>
+        @if (monthlyBill.hasError('max') && !monthlyBill.hasError('required')) {
+        <mat-error>Please enter a amount under 2.000 €</mat-error>
         }
-        @if (electricityBill.hasError('required')) {
+        @if (monthlyBill.hasError('required')) {
         <mat-error>Electricity bill is required</mat-error>
         }
       </mat-form-field>
       <div class="mat-stepper-buttons">
         <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext [disabled]="electricityBill.invalid">Next</button>
+        <button mat-button matStepperNext [disabled]="monthlyBill.invalid">Next</button>
       </div>
     </form>
   </mat-step>
@@ -73,20 +73,58 @@
     </div>
   </mat-step>
 
-  <mat-step label="Select solar panel configuration" state="build">
+  <mat-step label="Select solar panel configuration" state="build" [completed]="false">
     <div *ngIf="buildingInsights; else progressBar">
-      <p>Based on our <span title="Google Solar API">partners</span> data from <code>{{ imageryDate }}</code> the roof
-        of your specified building measures <code>{{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 ||
-        "null" }} &#13217;</code>. Considering your monthly electricity bill averages
-        <code>{{ electricityBill.value }}.00 €</code>, we propose the following setup.</p>
-      <span style="padding-right: 16px;">Solar panel configuration</span>
-      <mat-slider [min]="0" [max]="solarPanelConfigs?.length -1" step="1">
-        <input matSliderThumb [formControl]="solarPanelCount" #solarPanelSlider>
+      <p>Based on our <span title="Google Solar API">partners</span> data from {{ imageryDate }} the roof
+        of your specified building measures {{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 |
+        number:'1.0-0' }} square meters and can fit a maximum number of {{
+        buildingInsights?.solarPotential.maxArrayPanelsCount | number:'1.0-0' }} solar panels. Considering your monthly
+        electricity bill averages {{ monthlyBill.value | currency: 'EUR' }}, we calculated the following setups.
+      </p>
+      <mat-slider [min]="0" [max]="solarPanelConfigs?.length - 1" step="1">
+        <input matSliderThumb [formControl]="solarPanelSlider"
+          (ngModelChange)="calculateSolarSavings(solarPanelSlider.value!)">
       </mat-slider>
-      <span style="padding-left: 16px;">{{ solarPanelConfigs[solarPanelSlider.value].panelsCount }} panels</span>
-      <pre>{{ solarPanelConfigs[solarPanelSlider.value] | json }}</pre>
+      <span
+        style="padding-left: 16px;">{{ solarPanelConfigs[solarPanelSlider.value!].panelsCount }}/{{ solarPanelConfigs[solarPanelConfigs?.length - 1].panelsCount }} solar panels producing a total of {{ solarPanelConfigs[solarPanelSlider.value!].yearlyEnergyDcKwh | number:'1.0-0' }} kWh</span>
+      <blockquote>The installation cost represents the total cost of installing the solar panels. The
+        calculation is based on the size of the installation, where each kilowatt-peak (kWp) costs an estimated 1400
+        Euros. One solar panel measures {{ buildingInsights?.solarPotential.panelHeightMeters | number:'1.0-0' }} m in
+        height and {{ buildingInsights?.solarPotential.panelWidthMeters | number:'1.0-0' }} m in width and has a
+        capacity of {{ buildingInsights?.solarPotential.panelCapacityWatts | number:'1.0-0' }} W.
+      </blockquote>
+      <p>Installation cost: {{ installationCost | currency: 'EUR' }}</p>
+      <blockquote>The total cost with solar is the overall cost associated with the installation of solar panels over a
+        20-year period. It considers both the installation cost and the remaining lifetime utility bill while accounting
+        for any incentives.
+      </blockquote>
+      <p><span title="Total Cost with Solar = Installation Cost + Remaining Lifetime Utility Bill - Incentives">Total
+          cost with solar:</span> {{ totalCostWithSolar | currency: 'EUR' }}<br>
+        Cost of electricity without solar: {{ costOfElectricityWithoutSolar | currency: 'EUR' }}</p>
+      <blockquote>The savings represent the estimated financial benefit achieved by installing solar panels over their
+        expected 20-year lifetime. Positive values indicate a cost-saving, while negative values suggest that the cost
+        of electricity without solar is lower than the total cost with solar. It is calculated by subtracting the total
+        cost with solar from the cost of electricity without solar.
+      </blockquote>
+      <p><span title="Savings = Cost of Electricity without Solar - Total Cost with Solar">Savings:</span> {{ savings |
+        currency: 'EUR' }}</p>
+      <blockquote>
+        For an upcoming release, we are working on visualising the selected solar panel configuration as a layer on
+        Google Maps. For now, you can inspect the data in the following code block.
+        <pre>{{ solarPanelConfigs[solarPanelSlider.value!].roofSegmentSummaries | json }}</pre>
+      </blockquote>
       <div>
         <button mat-button matStepperPrevious (click)="flushBuildingInsights()">Back</button>
+        <button mat-button (click)="stepper.reset()">Reset</button>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Request a quote from our construction partners" state="quote">
+    <div *ngIf="false; else progressBar">
+      <p>Scheduled for an upcoming release.</p>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
         <button mat-button (click)="stepper.reset()">Reset</button>
       </div>
     </div>
@@ -112,5 +150,8 @@
   </ng-template>
   <ng-template matStepperIcon="build">
     <mat-icon>build</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="quote">
+    <mat-icon>request_quote</mat-icon>
   </ng-template>
 </mat-stepper>

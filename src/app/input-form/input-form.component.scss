@@ -35,3 +35,23 @@ code,
 pre {
     font-family: Roboto Mono, monospace;
 }
+
+blockquote {
+    border-left-width: 4px;
+    border-left-style: solid;
+    border-left-color: #ef6c00;
+    background-color: #f7f6f4;
+    padding: 16px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+blockquote>code,
+blockquote>pre {
+    background-color: #efede9;
+}
+
+blockquote>pre {
+    max-height: 400px;
+    overflow-y: scroll;
+}
