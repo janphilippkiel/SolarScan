@@ -2,6 +2,10 @@
 
 SolarScan is prepared to revolutionize the renewable energy landscape with a groundbreaking online platform dedicated to assessing the solar potential of residential and commercial rooftops. Our web-based solution empowers property owners to gauge the viability of solar energy installations on their rooftops by providing comprehensive data on the number of photovoltaic units, solar exposure in hours, associated costs, and overall profitability.
 
+<p align="center">
+    <a href="https://janphilippkiel.com/solarscan"><img src="src/assets/screenshot.png" alt="Screenhsot" style="padding: 1rem 0 1rem 0;"></a>
+</p>
+
 Our key features include:
 * Solar Potential Measurement: Our platform employs advanced algorithms to analyze geographical and environmental factors, delivering accurate assessments of the solar potential for each individual rooftop.
 * Information Hub: Users gain access to a wealth of information, including the optimal number of photovoltaic panels, estimated solar exposure in hours, projected costs, and potential returns on investment.
@@ -11,25 +15,13 @@ Our key features include:
 
 As the global demand for sustainable energy solutions continues to rise, SolarScan is positioned at the forefront of this movement, empowering individuals to make environmentally conscious choices while also enjoying the economic benefits of solar energy. With our user-friendly platform and strategic partnerships, we aim to accelerate the adoption of solar technology by providing a transparent and efficient pathway for homeowners to harness the power of the sun.
 
-## Development server
+## Development
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `npm start` for a dev server. The application will automatically reload if you change any of the source files.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ## Further help
 
