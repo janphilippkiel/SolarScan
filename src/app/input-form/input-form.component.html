@@ -19,9 +19,9 @@
       <p>Based on your information, we calculate the optimum number of solar modules to cover your electricity
         requirements. We strictly uphold privacy standards, and the information is solely used for the purpose of
         evaluating the optimal solar configuration for your specific needs</p>
-      <mat-form-field class="full">
+      <mat-form-field style="padding-right:16px">
         <mat-label>Electricity bill</mat-label>
-        <input matInput type="number" class="example-right-align" placeholder="Eg. 500" [formControl]="monthlyBill"
+        <input matInput type="number" class="example-right-align" placeholder="Eg. 100" [formControl]="monthlyBill"
           required>
         <span matTextSuffix>,00 €</span>
         @if (monthlyBill.hasError('min') && !monthlyBill.hasError('required')) {
@@ -34,6 +34,20 @@
         <mat-error>Electricity bill is required</mat-error>
         }
       </mat-form-field>
+      <mat-form-field>
+        <mat-label>Cost per kWh</mat-label>
+        <input matInput type="number" class="example-right-align" [formControl]="costPerKwh" required>
+        <span matTextSuffix>&nbsp;€</span>
+        @if (costPerKwh.hasError('min') && !costPerKwh.hasError('required')) {
+        <mat-error>Please enter a amount over 0,10 €</mat-error>
+        }
+        @if (costPerKwh.hasError('max') && !costPerKwh.hasError('required')) {
+        <mat-error>Please enter a amount under 1,00 €</mat-error>
+        }
+        @if (costPerKwh.hasError('required')) {
+        <mat-error>Cost per kWh is required</mat-error>
+        }
+      </mat-form-field>
       <div class="mat-stepper-buttons">
         <button mat-button matStepperPrevious>Back</button>
         <button mat-button matStepperNext [disabled]="monthlyBill.invalid">Next</button>
@@ -42,35 +56,26 @@
   </mat-step>
 
   <mat-step [stepControl]="addressQuery" label="Search for your address" state="location">
-    <form>
+    <form (keydown.enter)="$event.preventDefault()">
       <p>By entering your address, we conduct a search to precisely locate the position of your roof. This ensures
         accurate data for subsequent processes such as roof area measurement and solar configuration calculations.
         Please note that, in order to provide you with our services, we will securely forward this data to our partner
         Google.</p>
       <mat-form-field class="full">
         <mat-label>Address</mat-label>
-        <input matInput [formControl]="addressQuery" placeholder="Eg. Albertus-Magnus-Platz, 50923 Köln" required>
+        <input id="address" matInput [formControl]="addressQuery" placeholder="Eg. Albertus-Magnus-Platz, 50923 Köln"
+          required>
+        @if (addressQuery.hasError('incorrect')) {
+        <mat-error>The location of this address could not be resolved</mat-error>
+        }
       </mat-form-field>
+      <div id="map" style="width:100%;height:400px;margin-bottom:22px"></div>
       <div>
         <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext (click)="findCoordinates()" [disabled]="addressQuery.invalid">Next</button>
+        <button mat-button matStepperNext (click)="getBuildingInsights()" [disabled]="addressQuery.invalid">Confirm
+          location</button>
       </div>
     </form>
-  </mat-step>
-
-  <mat-step label="Confirm location" state="visibility">
-    <div *ngIf="googleMapsPreviewUrl.toString() != 'https://localhost'; else progressBar">
-      <p>Before proceeding with the measurement of your roof area and the calculation of the optimal solar
-        configurations, kindly verify that we have accurately identified your property.</p>
-      <iframe width="100%" height="400" frameborder="0" style="border: 0; padding-bottom: 22px;"
-        referrerpolicy="no-referrer-when-downgrade" [src]="googleMapsPreviewUrl.toString() | safe: 'resourceUrl'"
-        allowfullscreen>
-      </iframe>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext (click)="getBuildingInsights()">Next</button>
-      </div>
-    </div>
   </mat-step>
 
   <mat-step label="Select solar panel configuration" state="build" [completed]="false">
@@ -78,35 +83,40 @@
       <p>Based on our <span title="Google Solar API">partners</span> data from {{ imageryDate }} the roof
         of your specified building measures {{ buildingInsights?.solarPotential.wholeRoofStats.areaMeters2 |
         number:'1.0-0' }} square meters and can fit a maximum number of {{
-        buildingInsights?.solarPotential.maxArrayPanelsCount | number:'1.0-0' }} solar panels. Considering your monthly
-        electricity bill averages {{ monthlyBill.value | currency: 'EUR' }}, we calculated the following setups.
+        buildingInsights?.solarPotential.maxArrayPanelsCount | number:'1.0-0' }} solar panels. Given your monthly
+        electricity bill averages {{ monthlyBill.value | currency: 'EUR' }} and a price of {{ costPerKwh.value |
+        currency: 'EUR' }} per kWh, your household has an estimated energy demand of {{ this.estimatedYearlyEnergyDemand
+        | number:'1.0-0' }} kWh annually. Based on this, we recommend the following setup.
       </p>
       <mat-slider [min]="0" [max]="solarPanelConfigs?.length - 1" step="1">
-        <input matSliderThumb [formControl]="solarPanelSlider"
-          (ngModelChange)="calculateSolarSavings(solarPanelSlider.value!)">
+        <input matSliderThumb [formControl]="solarPanelSlider">
       </mat-slider>
-      <span
-        style="padding-left: 16px;">{{ solarPanelConfigs[solarPanelSlider.value!].panelsCount }}/{{ solarPanelConfigs[solarPanelConfigs?.length - 1].panelsCount }} solar panels producing a total of {{ solarPanelConfigs[solarPanelSlider.value!].yearlyEnergyDcKwh | number:'1.0-0' }} kWh</span>
+      <span style="padding-left: 16px;">{{ solarPanelConfigs[solarPanelSlider.value!].panelsCount }}/{{
+        solarPanelConfigs[solarPanelConfigs?.length - 1].panelsCount }} solar panels producing a total of {{
+        solarPanelConfigs[solarPanelSlider.value!].yearlyEnergyDcKwh | number:'1.0-0' }} kWh per year</span>
       <blockquote>The installation cost represents the total cost of installing the solar panels. The
         calculation is based on the size of the installation, where each kilowatt-peak (kWp) costs an estimated 1400
         Euros. One solar panel measures {{ buildingInsights?.solarPotential.panelHeightMeters | number:'1.0-0' }} m in
         height and {{ buildingInsights?.solarPotential.panelWidthMeters | number:'1.0-0' }} m in width and has a
         capacity of {{ buildingInsights?.solarPotential.panelCapacityWatts | number:'1.0-0' }} W.
       </blockquote>
-      <p>Installation cost: {{ installationCost | currency: 'EUR' }}</p>
+      <p>Installation cost: {{ solarPanelConfigs[solarPanelSlider.value!].installationCost | currency: 'EUR' }}</p>
       <blockquote>The total cost with solar is the overall cost associated with the installation of solar panels over a
         20-year period. It considers both the installation cost and the remaining lifetime utility bill while accounting
         for any incentives.
       </blockquote>
       <p><span title="Total Cost with Solar = Installation Cost + Remaining Lifetime Utility Bill - Incentives">Total
-          cost with solar:</span> {{ totalCostWithSolar | currency: 'EUR' }}<br>
-        Cost of electricity without solar: {{ costOfElectricityWithoutSolar | currency: 'EUR' }}</p>
+          cost with solar:</span> {{ solarPanelConfigs[solarPanelSlider.value!].totalCostWithSolar | currency: 'EUR'
+        }}<br>
+        Cost of electricity without solar: {{ solarPanelConfigs[solarPanelSlider.value!].lifetimeBill | currency: 'EUR'
+        }}</p>
       <blockquote>The savings represent the estimated financial benefit achieved by installing solar panels over their
         expected 20-year lifetime. Positive values indicate a cost-saving, while negative values suggest that the cost
         of electricity without solar is lower than the total cost with solar. It is calculated by subtracting the total
         cost with solar from the cost of electricity without solar.
       </blockquote>
-      <p><span title="Savings = Cost of Electricity without Solar - Total Cost with Solar">Savings:</span> {{ savings |
+      <p><span title="Savings = Cost of Electricity without Solar - Total Cost with Solar">Savings:</span> {{
+        solarPanelConfigs[solarPanelSlider.value!].savings |
         currency: 'EUR' }}</p>
       <blockquote>
         For an upcoming release, we are working on visualising the selected solar panel configuration as a layer on
@@ -115,7 +125,7 @@
       </blockquote>
       <div>
         <button mat-button matStepperPrevious (click)="flushBuildingInsights()">Back</button>
-        <button mat-button (click)="stepper.reset()">Reset</button>
+        <button mat-button disabled>Next</button>
       </div>
     </div>
   </mat-step>
