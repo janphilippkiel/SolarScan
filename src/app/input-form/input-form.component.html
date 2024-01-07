@@ -9,7 +9,7 @@
         <p><mat-checkbox [formControl]="energyStorage" class="example-margin">Energy storage</mat-checkbox></p>
       </span>
       <div class="mat-stepper-buttons">
-        <button mat-button matStepperNext [disabled]="solarPanels.invalid">Next</button>
+        <button mat-stroked-button matStepperNext [disabled]="solarPanels.invalid">Next</button>
       </div>
     </form>
   </mat-step>
@@ -19,7 +19,7 @@
       <p>Based on your information, we calculate the optimum number of solar modules to cover your electricity
         requirements. We strictly uphold privacy standards, and the information is solely used for the purpose of
         evaluating the optimal solar configuration for your specific needs</p>
-      <mat-form-field style="padding-right:16px">
+      <mat-form-field appearance="outline" style="padding-right:16px">
         <mat-label>Electricity bill</mat-label>
         <input matInput type="number" class="example-right-align" placeholder="Eg. 100" [formControl]="monthlyBill"
           required>
@@ -34,7 +34,7 @@
         <mat-error>Electricity bill is required</mat-error>
         }
       </mat-form-field>
-      <mat-form-field>
+      <mat-form-field appearance="outline">
         <mat-label>Cost per kWh</mat-label>
         <input matInput type="number" class="example-right-align" [formControl]="costPerKwh" required>
         <span matTextSuffix>&nbsp;€</span>
@@ -49,8 +49,8 @@
         }
       </mat-form-field>
       <div class="mat-stepper-buttons">
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext [disabled]="monthlyBill.invalid">Next</button>
+        <button mat-stroked-button matStepperPrevious style="margin-right: 16px;">Back</button>
+        <button mat-stroked-button matStepperNext [disabled]="monthlyBill.invalid">Next</button>
       </div>
     </form>
   </mat-step>
@@ -61,7 +61,7 @@
         accurate data for subsequent processes such as roof area measurement and solar configuration calculations.
         Please note that, in order to provide you with our services, we will securely forward this data to our partner
         Google.</p>
-      <mat-form-field class="full">
+      <mat-form-field appearance="outline" class="full">
         <mat-label>Address</mat-label>
         <input id="address" matInput [formControl]="addressQuery" placeholder="Eg. Albertus-Magnus-Platz, 50923 Köln"
           required>
@@ -71,8 +71,8 @@
       </mat-form-field>
       <div id="map" style="width:100%;height:400px;margin-bottom:22px"></div>
       <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button matStepperNext (click)="getBuildingInsights()" [disabled]="addressQuery.invalid">Confirm
+        <button mat-stroked-button matStepperPrevious style="margin-right: 16px;">Back</button>
+        <button mat-stroked-button matStepperNext (click)="getBuildingInsights()" [disabled]="addressQuery.invalid">Confirm
           location</button>
       </div>
     </form>
@@ -124,8 +124,8 @@
         <pre>{{ solarPanelConfigs[solarPanelSlider.value!].roofSegmentSummaries | json }}</pre>
       </blockquote>
       <div>
-        <button mat-button matStepperPrevious (click)="flushBuildingInsights()">Back</button>
-        <button mat-button disabled>Next</button>
+        <button mat-stroked-button matStepperPrevious style="margin-right: 16px;" (click)="flushBuildingInsights()">Back</button>
+        <button mat-stroked-button disabled>Next</button>
       </div>
     </div>
   </mat-step>
@@ -134,8 +134,8 @@
     <div *ngIf="false; else progressBar">
       <p>Scheduled for an upcoming release.</p>
       <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button (click)="stepper.reset()">Reset</button>
+        <button mat-stroked-button matStepperPrevious style="margin-right: 16px;">Back</button>
+        <button mat-stroked-button (click)="stepper.reset()">Reset</button>
       </div>
     </div>
   </mat-step>

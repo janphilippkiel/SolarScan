@@ -33,14 +33,14 @@ pre {
 
 code,
 pre {
-    font-family: Roboto Mono, monospace;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 blockquote {
     border-left-width: 4px;
     border-left-style: solid;
-    border-left-color: #ef6c00;
-    background-color: #f7f6f4;
+    border-left-color: #ffd966;
+    background-color: #fffcf2;
     padding: 16px;
     margin-left: 0;
     margin-right: 0;
@@ -48,7 +48,7 @@ blockquote {
 
 blockquote>code,
 blockquote>pre {
-    background-color: #efede9;
+    background-color: #fff8e2;
 }
 
 blockquote>pre {
