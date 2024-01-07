@@ -37,6 +37,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/apple-touch-icon.png",
               "src/assets",
               "src/.htaccess",
               "src/3rdpartylicenses.txt"
@@ -118,6 +119,7 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
+              "src/apple-touch-icon.png",
               "src/assets",
               "src/.htaccess"
             ],
